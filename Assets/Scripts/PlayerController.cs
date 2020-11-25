@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class PlayerController : MonoBehaviour
 {
@@ -11,17 +12,18 @@ public class PlayerController : MonoBehaviour
     public GameObject PowerUpLeft;
     public GameObject PlayPlaneB;
 
-    public GameObject MovePlane;
+    //public GameObject MovePlane;
     float Countdown = 10f;
 
-
+    bool isTimerStart = false;
+    float RoundedUp;
     bool AllPowerUp = false;
     // bool for timer
     bool CollidedWithCone = false;
 
     bool TimerIsZero = false;
 
-    public bool SwitchTouched = false;
+    public bool SwitchTouched;
 
     private int powerupCount;
     private int totalPowerUp;
@@ -79,24 +81,29 @@ public class PlayerController : MonoBehaviour
             AllPowerUp = true;
         }
 
-        if (CollidedWithCone == true)
+        //if (CollidedWithCone == true)
+        //{
+        //    Countdown-= Time.deltaTime; 
+        //    Debug.Log("Countdown started");
+        //    CountdownText.GetComponent<Text>().text = "Timer Countdown: " + Countdown;
+        //}
+
+        //if(Countdown <= 0)
+        //{
+        //    TimerIsZero = true;
+        //}
+
+        //if (TimerIsZero == true)
+        //{
+        //    CountdownText.GetComponent<Text>().text = "Timer Countdown: 0";           
+        //}
+
+        if(transform.position.y < -5)
         {
-            Countdown-= Time.deltaTime; 
-            Debug.Log("Countdown started");
-            CountdownText.GetComponent<Text>().text = "Timer Countdown: " + Countdown;
+            SceneManager.LoadScene("LoseScene");
         }
 
-        if(Countdown <= 0)
-        {
-            TimerIsZero = true;
-        }
-
-        if (TimerIsZero == true)
-        {
-            CountdownText.GetComponent<Text>().text = "Timer Countdown: 0";
-            //TimerIsZero = false;
-            //PlayPlaneB.transform.Rotate(0f, 90f, 0f);
-        }
+        CountDownController();
        
     }
 
@@ -123,21 +130,44 @@ public class PlayerController : MonoBehaviour
 
             if (other.gameObject.CompareTag("TagCone"))
             {
-                CollidedWithCone = true;
-                if(AllPowerUp == true)
-                {                                 
+                //CollidedWithCone = true;
+                if (AllPowerUp == true)
+                {
+                    isTimerStart = true;
+                    CollidedWithCone = true;
                     Debug.Log("Activated PlaneB 90 deg rotation");
-                    PlayPlaneB.transform.Rotate(0f, 90f, 0f);                  
+                    PlayPlaneB.transform.Rotate(0f, 90f, 0f);
                     //PlayPlaneB.transform.Translate(Vector3.forward * Time.deltaTime * MoveSpeed);
                 }
             }           
-        }    
-        
+        }
         if (other.gameObject.CompareTag("Switch"))
         {
             Debug.Log("Switch Activated");
-            SwitchTouched = true;
-            //MovePlane.transform.Translate(Vector3.forward * Time.deltaTime * MoveSpeed);
+            SwitchTouched = true;          
+        }
+
+    }
+    
+    private void CountDownController()
+    {
+        
+        if (CollidedWithCone == true)
+        {
+            if (Countdown > 0 && isTimerStart == true)
+            {
+                Countdown -= Time.deltaTime;
+                RoundedUp = Mathf.RoundToInt(Countdown);
+                CountdownText.GetComponent<Text>().text = "Timer Countdown: " + RoundedUp;
+            }
+            else if (Countdown <= 0 && isTimerStart == true)
+            {
+                //Countdown = 10f;
+                //RoundedUp = 10;
+                isTimerStart = false;
+                CountdownText.GetComponent<Text>().text = "Timer Countdown: 0";
+                PlayPlaneB.transform.Rotate(0f, 90f, 0f);
+            }
         }
     }
 }

@@ -6,12 +6,12 @@ public class MovePlaneController : MonoBehaviour
 {
     float speed = 5.0f;
     float zUpperLimit = 85.0f;
-    float zLowerLimit = 45.0f;
+    float zLowerLimit = 55.0f;
 
     bool isMoveFwd = false;
-    bool isMoveBack = false;
+    bool isMoveBack = true;
 
-    public GameObject Player;
+    public GameObject PlayerGo;
     // Start is called before the first frame update
     void Start()
     {
@@ -21,12 +21,7 @@ public class MovePlaneController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
-    }
-
-    private void OnTriggerEnter(Collider other)
-    {
-        if (Player.GetComponent<PlayerController>().SwitchTouched==true)
+        if (PlayerGo.GetComponent<PlayerController>().SwitchTouched)
         {
             if (isMoveBack && !isMoveFwd)
             {
@@ -53,6 +48,16 @@ public class MovePlaneController : MonoBehaviour
                     isMoveFwd = !isMoveFwd;
                 }
             }
-        }       
+        }
+    }
+
+    
+    // Make player move w moving plane
+    private void OnCollisionEnter(Collision collision)
+    {
+        if(collision.gameObject.CompareTag("Player"))
+        {
+            PlayerGo.transform.SetParent(transform);
+        }
     }
 }
